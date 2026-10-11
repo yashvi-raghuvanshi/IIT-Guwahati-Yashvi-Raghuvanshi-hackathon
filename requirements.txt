@@ -1,0 +1,17 @@
+streamlit
+plotly
+python-dotenv
+feedparser
+requests
+pandas
+numpy
+pyarrow
+python-dotenv
+yfinance
+vaderSentiment
+transformers
+torch
+spacy
+fastapi
+uvicorn
+

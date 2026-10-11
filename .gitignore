@@ -1,0 +1,5 @@
+.venv/
+.env
+data/kaggle_full/
+__pycache__/
+*.pyc

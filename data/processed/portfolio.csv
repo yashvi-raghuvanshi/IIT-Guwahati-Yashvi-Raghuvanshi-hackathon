@@ -1,0 +1,101 @@
+asset_id,type,subtype,counterparty,sector,rating,market_value,maturity_years,rate_dur,oil_beta,vix_beta,gdp_beta,weight
+A001,Loan,Term Loan,Keystone Power,Energy,BBB,90000000.0,6.1,3.01,0.195,-0.02,0.0145,0.06
+A002,Bond,Corporate Bond,Lumen Capital,Financials,BBB,69005556.0,8.5,5.03,0.002,-0.03,0.0126,0.046
+A003,Bond,Corporate Bond,Tidal Software,Technology,BBB,66146646.0,4.1,4.88,0.003,-0.03,0.0116,0.0441
+A004,Loan,Revolver,Harbor Software,Technology,BB,49025280.0,5.0,0.58,0.003,-0.02,0.0174,0.0327
+A005,Derivative,Interest Rate Swap,Summit Cloud,Technology,A,45194106.0,4.7,-4.02,0.0,0.0,0.003,0.0301
+A006,Equity,Listed Equity,Tidal Software,Technology,NR,43461277.0,,4.09,0.01,-0.196,0.0279,0.029
+A007,Bond,Corporate Bond,Lumen Capital,Financials,BBB,43328178.0,5.0,6.18,0.003,-0.03,0.0132,0.0289
+A008,Bond,Corporate Bond,Summit Biosciences,Healthcare,AA,43122587.0,5.0,5.02,0.002,-0.03,0.0042,0.0287
+A009,Loan,Revolver,Juniper Securities,Financials,B,38569936.0,5.6,0.31,0.003,-0.02,0.0318,0.0257
+A010,Derivative,Commodity Swap,Falcon Energy,Energy,BBB,37256096.0,6.4,0.0,0.975,0.0,0.0048,0.0248
+A011,Loan,Term Loan,Lumen Software,Technology,BB,35540562.0,6.5,3.1,0.004,-0.02,0.0189,0.0237
+A012,Equity,Listed Equity,Vanguard Aerospace,Others,NR,32907498.0,,4.91,-0.049,-0.222,0.0196,0.0219
+A013,Loan,Term Loan,Tidal Software,Technology,BBB,32074886.0,3.4,2.57,0.004,-0.02,0.0133,0.0214
+A014,Bond,Corporate Bond,Dynamo Foods,Consumer,AAA,31598894.0,2.5,5.37,-0.024,-0.03,0.0055,0.0211
+A015,Bond,Corporate Bond,Redwood Securities,Financials,A,25923038.0,8.8,7.49,0.003,-0.03,0.0082,0.0173
+A016,Bond,Corporate Bond,Harbor Power,Energy,A,24265547.0,3.1,4.68,0.112,-0.03,0.0091,0.0162
+A017,Loan,Revolver,Beacon Energy,Energy,A,23141398.0,1.2,0.51,0.153,-0.02,0.0111,0.0154
+A018,Loan,Term Loan,Dynamo Foods,Consumer,AA,22707665.0,6.3,3.44,-0.036,-0.02,0.0073,0.0151
+A019,Loan,Term Loan,Northwind Cloud,Technology,BB,22397275.0,1.6,3.43,0.003,-0.02,0.017,0.0149
+A020,Loan,Term Loan,Northwind Cloud,Technology,BBB,22272945.0,6.9,2.68,0.003,-0.02,0.0136,0.0148
+A021,Equity,Listed Equity,Quanta Foods,Consumer,NR,21548229.0,,4.14,-0.08,-0.222,0.0264,0.0144
+A022,Loan,Revolver,Dynamo Foods,Consumer,B,21035337.0,6.3,0.24,-0.027,-0.02,0.028,0.014
+A023,Bond,Corporate Bond,Quanta Foods,Consumer,BBB,19900717.0,3.8,4.53,-0.015,-0.03,0.011,0.0133
+A024,Loan,Revolver,Quanta Health,Healthcare,BBB,17089937.0,1.5,0.35,0.003,-0.02,0.0085,0.0114
+A025,Loan,Term Loan,Quartz Logistics,Others,BBB,16999292.0,4.5,2.31,-0.027,-0.02,0.0127,0.0113
+A026,Bond,Corporate Bond,Granite Bank,Financials,BBB,15430278.0,8.1,3.68,0.002,-0.03,0.0105,0.0103
+A027,Derivative,Commodity Swap,Falcon Energy,Energy,AA,14806181.0,6.5,0.0,1.167,0.0,0.0023,0.0099
+A028,Derivative,Interest Rate Swap,Juniper Securities,Financials,BBB,14781809.0,7.3,-2.93,0.0,0.0,0.0045,0.0099
+A029,Derivative,Interest Rate Swap,Granite Biosciences,Healthcare,AA,14634529.0,5.6,4.28,0.0,0.0,0.0013,0.0098
+A030,Loan,Revolver,Quanta Foods,Consumer,BB,14422755.0,4.3,0.61,-0.026,-0.02,0.0226,0.0096
+A031,Equity,Listed Equity,Keystone Power,Energy,NR,14387847.0,,3.62,0.441,-0.183,0.0327,0.0096
+A032,Bond,Corporate Bond,Quanta Foods,Consumer,AA,14307119.0,3.4,3.68,-0.016,-0.03,0.007,0.0095
+A033,Derivative,Interest Rate Swap,Tidal Biosciences,Healthcare,BBB,14198306.0,9.5,4.26,0.0,0.0,0.0025,0.0095
+A034,Equity,Listed Equity,Quartz Systems,Technology,NR,13693179.0,,6.31,0.013,-0.179,0.0268,0.0091
+A035,Derivative,Commodity Swap,Northwind Pipelines,Energy,AA,13310283.0,2.2,0.0,-1.078,0.0,0.0024,0.0089
+A036,Equity,Listed Equity,Northwind Cloud,Technology,NR,13208900.0,,4.42,0.012,-0.196,0.0274,0.0088
+A037,Bond,Corporate Bond,Quartz Logistics,Others,AAA,12955359.0,5.7,5.37,-0.011,-0.03,0.0031,0.0086
+A038,Equity,Listed Equity,Beacon Energy,Energy,NR,12869672.0,,3.52,0.736,-0.205,0.0263,0.0086
+A039,Derivative,Equity Option/TRS,Falcon Energy,Energy,A,12477685.0,8.3,0.0,0.0,-0.132,0.0031,0.0083
+A040,Loan,Revolver,Lattice Biosciences,Healthcare,A,12382696.0,2.2,0.76,0.004,-0.02,0.0053,0.0083
+A041,Loan,Revolver,Falcon Energy,Energy,BB,12314659.0,6.6,0.59,0.273,-0.02,0.0173,0.0082
+A042,Loan,Trade Finance,Lumen Software,Technology,A,12175557.0,5.6,0.57,0.003,-0.02,0.0097,0.0081
+A043,Bond,Corporate Bond,Falcon Industries,Others,BBB,12047379.0,4.1,6.75,-0.014,-0.03,0.01,0.008
+A044,Derivative,Interest Rate Swap,Lumen Software,Technology,BBB,11818889.0,3.1,-6.01,0.0,0.0,0.0047,0.0079
+A045,Loan,Term Loan,Tidal Software,Technology,A,11399864.0,4.6,3.68,0.003,-0.02,0.0115,0.0076
+A046,Loan,Revolver,Dynamo Foods,Consumer,A,11161454.0,6.4,0.28,-0.021,-0.02,0.0119,0.0074
+A047,Derivative,Commodity Swap,Vanguard Pipelines,Energy,A,11136979.0,6.4,0.0,1.008,0.0,0.0039,0.0074
+A048,Loan,Term Loan,Quartz Capital,Financials,BB,10418716.0,1.6,2.87,0.004,-0.02,0.0189,0.0069
+A049,Equity,Listed Equity,Granite Bank,Financials,NR,9968791.0,,3.2,0.01,-0.225,0.0275,0.0066
+A050,Loan,Trade Finance,Quanta Health,Healthcare,A,9934204.0,6.2,0.52,0.003,-0.02,0.0058,0.0066
+A051,Bond,Corporate Bond,Quanta Health,Healthcare,A,9582298.0,5.1,4.6,0.002,-0.03,0.0062,0.0064
+A052,Loan,Term Loan,Quanta Foods,Consumer,B,9467333.0,1.8,2.91,-0.026,-0.02,0.0272,0.0063
+A053,Loan,Term Loan,Northwind Pipelines,Energy,BBB,9460549.0,3.7,3.13,0.152,-0.02,0.011,0.0063
+A054,Bond,Corporate Bond,Dynamo Foods,Consumer,BBB,9286470.0,4.1,4.45,-0.018,-0.03,0.0142,0.0062
+A055,Loan,Term Loan,Lumen Capital,Financials,A,9268926.0,1.1,2.08,0.004,-0.02,0.0111,0.0062
+A056,Loan,Trade Finance,Lumen Capital,Financials,BBB,9163948.0,6.2,0.25,0.003,-0.02,0.0122,0.0061
+A057,Bond,Corporate Bond,Dynamo Foods,Consumer,BBB,9002251.0,4.5,6.82,-0.021,-0.03,0.0109,0.006
+A058,Loan,Term Loan,Vanguard Aerospace,Others,BBB,8930223.0,5.8,3.22,-0.015,-0.02,0.0115,0.006
+A059,Equity,Listed Equity,Redwood Securities,Financials,NR,8760832.0,,2.29,0.007,-0.233,0.03,0.0058
+A060,Equity,Listed Equity,Lumen Software,Technology,NR,8687296.0,,3.02,0.012,-0.249,0.0255,0.0058
+A061,Loan,Revolver,Lattice Biosciences,Healthcare,BB,8464976.0,4.9,0.74,0.003,-0.02,0.0137,0.0056
+A062,Loan,Revolver,Vanguard Pipelines,Energy,BBB,8347287.0,3.3,0.65,0.203,-0.02,0.0115,0.0056
+A063,Equity,Listed Equity,Lumen Capital,Financials,NR,8276934.0,,4.78,0.007,-0.217,0.0312,0.0055
+A064,Loan,Term Loan,Dynamo Foods,Consumer,B,8201415.0,3.0,3.35,-0.036,-0.02,0.0339,0.0055
+A065,Equity,Listed Equity,Lumen Capital,Financials,NR,7567493.0,,3.87,0.008,-0.204,0.0271,0.005
+A066,Equity,Listed Equity,Harbor Software,Technology,NR,7270730.0,,3.55,0.012,-0.207,0.0328,0.0048
+A067,Loan,Revolver,Lumen Capital,Financials,A,7096562.0,3.2,0.8,0.003,-0.02,0.0099,0.0047
+A068,Derivative,Interest Rate Swap,Juniper Industries,Others,A,6715956.0,4.9,-4.24,-0.0,0.0,0.003,0.0045
+A069,Equity,Listed Equity,Tidal Software,Technology,NR,6680010.0,,5.3,0.012,-0.247,0.0234,0.0045
+A070,Loan,Term Loan,Lumen Capital,Financials,BB,6085942.0,2.2,3.59,0.003,-0.02,0.0227,0.0041
+A071,Equity,Listed Equity,Quartz Logistics,Others,NR,5961251.0,,2.4,-0.049,-0.196,0.0204,0.004
+A072,Derivative,Interest Rate Swap,Juniper Cloud,Technology,AA,5941783.0,3.2,5.54,0.0,0.0,0.0024,0.004
+A073,Loan,Revolver,Lumen Capital,Financials,BB,5886189.0,5.1,0.55,0.004,-0.02,0.0206,0.0039
+A074,Derivative,Equity Option/TRS,Lumen Capital,Financials,A,5882732.0,4.1,0.0,0.0,-0.145,0.0035,0.0039
+A075,Loan,Revolver,Granite Retail,Consumer,A,5535737.0,5.5,0.73,-0.027,-0.02,0.0096,0.0037
+A076,Bond,Corporate Bond,Tidal Software,Technology,BBB,5215358.0,3.7,7.0,0.003,-0.03,0.0094,0.0035
+A077,Bond,Corporate Bond,Granite Retail,Consumer,BBB,5141062.0,3.3,5.91,-0.02,-0.03,0.0106,0.0034
+A078,Derivative,Interest Rate Swap,Tidal Software,Technology,A,5062112.0,6.3,4.32,0.0,0.0,0.0029,0.0034
+A079,Bond,Government Bond,Sovereign,Others,AA,4982979.0,6.6,7.66,-0.017,-0.03,0.0052,0.0033
+A080,Bond,Corporate Bond,Atlas Logistics,Others,BBB,4863497.0,8.2,6.32,-0.016,-0.03,0.0074,0.0032
+A081,Bond,Corporate Bond,Quartz Systems,Technology,AAA,4704935.0,4.2,6.69,0.003,-0.03,0.0039,0.0031
+A082,Bond,Corporate Bond,Lattice Biosciences,Healthcare,BBB,4695761.0,2.6,4.85,0.003,-0.03,0.0071,0.0031
+A083,Derivative,Commodity Swap,Vanguard Pipelines,Energy,BBB,4641906.0,1.2,0.0,0.888,0.0,0.0037,0.0031
+A084,Loan,Revolver,Northwind Pipelines,Energy,BB,4565368.0,2.6,0.51,0.171,-0.02,0.0188,0.003
+A085,Equity,Listed Equity,Tidal Software,Technology,NR,4444545.0,,6.34,0.007,-0.182,0.0253,0.003
+A086,Derivative,Equity Option/TRS,Lumen Capital,Financials,A,4103903.0,2.8,0.0,0.0,0.128,0.0029,0.0027
+A087,Loan,Revolver,Cobalt Pharma,Healthcare,BB,3893684.0,5.5,0.64,0.003,-0.02,0.0144,0.0026
+A088,Loan,Revolver,Vanguard Securities,Financials,BBB,3780985.0,5.9,0.76,0.004,-0.02,0.0168,0.0025
+A089,Bond,Government Bond,Sovereign,Others,AA,3726813.0,2.1,6.34,-0.015,-0.03,0.0052,0.0025
+A090,Bond,Corporate Bond,Atlas Logistics,Others,A,3544508.0,6.1,7.08,-0.012,-0.03,0.0057,0.0024
+A091,Bond,Corporate Bond,Northwind Cloud,Technology,BBB,3193573.0,6.6,6.24,0.002,-0.03,0.0113,0.0021
+A092,Bond,Corporate Bond,Quartz Logistics,Others,BBB,3049799.0,9.3,3.16,-0.018,-0.03,0.0083,0.002
+A093,Equity,Listed Equity,Dynamo Foods,Consumer,NR,2859964.0,,2.87,-0.062,-0.156,0.0302,0.0019
+A094,Loan,Revolver,Granite Bank,Financials,BB,2723114.0,6.0,0.46,0.004,-0.02,0.0228,0.0018
+A095,Equity,Listed Equity,Quartz Capital,Financials,NR,2445550.0,,3.73,0.008,-0.218,0.0328,0.0016
+A096,Loan,Revolver,Nova Retail,Consumer,BB,2070897.0,1.4,0.73,-0.035,-0.02,0.0223,0.0014
+A097,Loan,Term Loan,Vanguard Pipelines,Energy,A,1992447.0,3.8,2.13,0.268,-0.02,0.011,0.0013
+A098,Derivative,Equity Option/TRS,Helix Stores,Consumer,AA,1746738.0,2.8,0.0,-0.0,0.145,0.0022,0.0012
+A099,Derivative,Interest Rate Swap,Granite Retail,Consumer,A,1290009.0,8.3,6.99,-0.0,0.0,0.0039,0.0009
+A100,Bond,Corporate Bond,Falcon Energy,Energy,A,979394.0,7.8,6.57,0.123,-0.03,0.0098,0.0007

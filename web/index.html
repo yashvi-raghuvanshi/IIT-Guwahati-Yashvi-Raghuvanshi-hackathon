@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MarketGuard AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<style>
+:root{
+  /* Palette: navy / slate / steel blue. Green, red and amber are kept for gain, loss and caution only.
+     Variable names are unchanged from the original so the markup does not need to change. */
+  --ink:#0a1424; --panel:#0f1d33; --panel2:#15263f; --line:#243754; --text:#e9eef6; --muted:#8fa1ba;
+  --cream:#edf1f6; --card:#ffffff; --black:#0b1f3a; --soft:#e1e7ef; --rule:#c8d2e0;
+  --lav:#d4e3f9; --lav-d:#2f66c8; --accent:#5b93ec; --mint:#c9ecd9; --green:#12935e; --coral:#d64545; --coral-l:#f7d6d3;
+  --peach:#f6e2b3; --sky:#a9c8f0; --amber:#e3ae35; --stone:#7a8aa0;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ink);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:14px;font-variant-numeric:tabular-nums;display:grid;grid-template-rows:64px 1fr;overflow:hidden}
+button,select,input{font-family:inherit}
+.serif{font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-weight:400}
+
+/* ---------- header ---------- */
+header{display:flex;align-items:center;gap:18px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--ink);min-width:0}
+.brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
+.logo{width:30px;height:30px;border:2px solid var(--text);border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px}
+.brand b{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.brand small{color:var(--muted);font-size:12px;padding-left:12px;border-left:1px solid var(--line)}
+.spacer{flex:1}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:var(--panel)}
+.seg button{border:0;background:transparent;color:var(--muted);padding:6px 14px;border-radius:999px;font-weight:600;font-size:13px;cursor:pointer}
+.seg button.on.live{background:var(--mint);color:#10331f}
+.seg button.on.replay{background:var(--accent);color:#06142e}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px}
+#play{width:36px;height:36px;border-radius:50%;border:1.5px solid var(--text);background:var(--ink);color:var(--text);cursor:pointer;display:grid;place-items:center;padding:0}
+#play svg{width:14px;height:14px;fill:currentColor}
+#play:disabled,#slider:disabled,#speed:disabled{opacity:.35;cursor:not-allowed}
+#slider{width:min(26vw,320px);accent-color:var(--accent)}
+#clock{font-weight:600;min-width:178px;text-align:right;font-size:13px}
+#clock small{display:block;color:var(--muted);font-weight:500;font-size:11px}
+#speed,.sel{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:13px}
+#status{font-size:12px;color:var(--muted);white-space:nowrap}
+#status.err{color:var(--coral)}
+
+/* ---------- layout: feed (30%) | modules (70%) ---------- */
+main{display:grid;grid-template-columns:minmax(300px,30%) minmax(0,1fr);min-height:0}
+.feedpane{background:var(--panel);overflow:auto;padding:16px 14px;border-right:1px solid var(--line);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22'%3E%3Ccircle cx='2' cy='2' r='1' fill='%23ffffff' fill-opacity='.07'/%3E%3C/svg%3E")}
+.mainpane{background:var(--cream);color:var(--black);overflow:auto;padding:20px 26px 40px}
+
+/* ---------- feed ---------- */
+.fhead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 10px;align-items:center;margin-bottom:14px}
+.fhead h2{grid-area:1/1;margin:0;font-size:20px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.fhead .live{grid-area:1/2;justify-self:end;font-size:12px;color:var(--muted);white-space:nowrap}
+.feedpane .sel{width:100%;min-width:0;background:var(--panel2)}
+.sig{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px}
+.sig .top{display:flex;align-items:baseline;gap:8px;min-width:0}
+.sig .ent{font-weight:800;font-size:15px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sig .when{margin-left:auto;flex:none;color:var(--muted);font-size:11.5px;white-space:nowrap}
+.sig .hl{color:#d4dbe7;margin:6px 0 10px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sig .meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;font-size:12px}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+.pill.Positive{background:rgba(46,196,134,.16);color:#5fd9a2}
+.pill.Negative{background:rgba(240,103,95,.16);color:#f58b83}
+.pill.Neutral{background:rgba(143,161,186,.16);color:#a9b8cc}
+.evt{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#c3cdde}
+.evt i{width:8px;height:8px;border-radius:3px;background:var(--c,#7a8aa0)}
+.imp{margin-left:auto;border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap}
+.imp.hi{background:var(--amber);border-color:var(--amber);color:#2a2200}
+
+/* ---------- tabs + cards (right panel) ---------- */
+.tabs{display:inline-flex;border:1.5px solid var(--black);border-radius:999px;padding:3px;margin-bottom:18px;background:var(--card)}
+.tabs button{border:0;background:transparent;color:var(--black);padding:8px 18px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer}
+.tabs button.on{background:var(--black);color:var(--cream)}
+.tab{display:none}.tab.active{display:block}
+.title h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.03em}
+.title h1 em{background:var(--lav);padding:0 8px;border-radius:8px;font-size:1.08em}
+.title p{margin:6px 0 16px;color:#4f5f78}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.chipbtn{border:1.5px solid var(--black);background:transparent;border-radius:999px;padding:5px 12px;font-weight:700;font-size:12px;cursor:pointer;color:var(--black)}
+.chipbtn.on,.chipbtn:hover{background:var(--lav)}
+.grid{display:grid;gap:14px;margin-bottom:14px}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.g21{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}
+.card{background:var(--card);border:1.5px solid var(--black);border-radius:16px;padding:16px;min-width:0}
+.card h3{margin:0 0 12px;font-size:14px;font-weight:800;letter-spacing:-.01em}
+.card h3 small{font-weight:500;color:#5f6f87;margin-left:6px}
+.stat .sq{width:12px;height:12px;border-radius:4px;display:block;margin-bottom:10px}
+.stat .num{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.stat .lab{color:#4f5f78;margin-top:6px;font-weight:500}
+.stat .sub{margin-top:4px;font-size:12px;font-weight:700}
+.up{color:#0f8a57}.down{color:#c73e3e}.flat{color:#5f6f87}
+.chartbox{position:relative;height:250px}
+.chartbox.tall{height:290px}
+.donutwrap{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center}
+.donutbox{position:relative;height:150px}
+.donutc{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}
+.donutc b{font-size:24px;font-weight:800;line-height:1}.donutc span{font-size:11px;color:#5f6f87}
+.legend{display:grid;gap:5px;font-size:12px}
+.legend div{display:flex;align-items:center;gap:7px}
+.legend i{width:10px;height:10px;border-radius:3px;flex:none}
+.legend b{margin-left:auto;font-weight:700}
+table{width:100%;border-collapse:collapse}
+th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#5f6f87;text-align:left;font-weight:700;padding:0 8px 8px}
+td{padding:9px 8px;border-top:1px dashed var(--rule);font-size:13px;vertical-align:middle}
+td.r,th.r{text-align:right}
+.tscroll{max-height:290px;overflow:auto}
+.rbar{display:flex;align-items:center;gap:8px}
+.rbar .bar{flex:1;height:8px;border-radius:99px;background:var(--soft);overflow:hidden;min-width:50px}
+.rbar .bar span{display:block;height:100%;background:var(--coral)}
+.rbar b{min-width:34px;text-align:right}
+.drv{color:#4f5f78;font-size:12px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{background:var(--soft);border-radius:6px;padding:1px 7px;font-size:11px;font-weight:700;color:#2b3b55}
+.muted{color:#5f6f87}
+.note{border:1.5px dashed var(--rule);border-radius:14px;padding:14px;color:#4f5f78;margin-bottom:14px}
+.rules{font-size:12px;color:#4f5f78;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.rules span{border:1px solid var(--rule);border-radius:999px;padding:3px 10px}
+
+/* ---------- stress tab ---------- */
+.banner{border:1.5px solid var(--black);border-radius:16px;padding:14px 16px;box-shadow:4px 4px 0 var(--black);margin-bottom:18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.banner.HIGH{background:var(--coral-l)}.banner.ELEVATED{background:var(--peach)}.banner.NORMAL{background:var(--mint)}
+.banner .st{font-weight:800;letter-spacing:.04em;font-size:12px;background:var(--black);color:var(--cream);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.banner .msg{flex:1;min-width:200px}
+.banner .msg b{display:block;margin-bottom:2px}
+.sliders{display:grid;gap:12px}
+.srow{display:grid;grid-template-columns:150px 1fr 74px;gap:12px;align-items:center}
+.srow input{accent-color:var(--black);width:100%}
+.srow output{font-weight:800;text-align:right}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1.5px solid var(--black);background:transparent;border-radius:999px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;color:var(--black)}
+.btn:hover,.btn.on{background:var(--lav)}
+.fire{width:100%;margin-top:14px;background:var(--black);color:var(--cream);border:1.5px solid var(--black);border-radius:999px;padding:13px;font-weight:800;font-size:14px;cursor:pointer;box-shadow:3px 3px 0 var(--lav-d)}
+.fire:hover{background:#173a6b}
+.mode{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:12.5px;color:#4f5f78;flex-wrap:wrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.fchip{border:1px solid var(--rule);border-radius:10px;padding:6px 10px;font-size:12px}
+.fchip b{display:block;font-size:14px}
+.overlay{position:fixed;inset:64px 0 0 0;background:var(--ink);display:none;place-content:center;text-align:center;z-index:5;padding:30px}
+.overlay.show{display:grid}
+.overlay h2{font-size:28px;margin:0 0 8px}
+.overlay code{background:var(--panel2);padding:3px 8px;border-radius:6px}
+
+@media (max-width:1100px){
+  body{overflow:auto;grid-template-rows:auto 1fr}
+  header{flex-wrap:wrap;padding:10px 14px}
+  main{grid-template-columns:1fr}
+  .feedpane{max-height:60vh}
+  .g4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g2,.g21{grid-template-columns:1fr}
+  .brand small{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><div class="logo">M</div><b>MarketGuard AI</b><small>Real-time risk intelligence for global markets</small></div>
+  <div class="spacer"></div>
+  <div class="seg" id="modeSeg">
+    <button id="mLive" class="live"><span class="dot"></span>Live</button>
+    <button id="mReplay" class="replay on">Replay</button>
+  </div>
+  <button id="play" title="Play / pause"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg></button>
+  <input id="slider" type="range" min="0" max="1000" step="1" value="1000">
+  <div id="clock">&ndash;<small>UTC</small></div>
+  <select id="speed" title="Replay speed"></select>
+  <span id="status">connecting&hellip;</span>
+</header>
+
+<main>
+  <section class="feedpane">
+    <div class="fhead">
+      <h2>Live Signal Feed</h2>
+      <select id="fSent" class="sel"><option value="">All sentiment</option><option>Positive</option><option>Neutral</option><option>Negative</option></select>
+      <select id="fEvent" class="sel"><option value="">All events</option></select>
+      <span class="live"><span class="dot"></span><span id="fcount">0</span> shown</span>
+    </div>
+    <div id="feed"></div>
+  </section>
+
+  <section class="mainpane">
+    <nav class="tabs" id="tabs">
+      <button data-tab="risk" class="on">Risk Engine</button>
+      <button data-tab="index">Index Rebalancing</button>
+      <button data-tab="stress">Stress Testing</button>
+    </nav>
+
+    <!-- ============ TAB 1: RISK ENGINE ============ -->
+    <div class="tab active" id="tab-risk">
+      <div class="title"><h1>Risk Engine <em class="serif">Overview</em></h1><p>Real-time analysis of market signals and portfolio risk</p></div>
+      <div class="row" style="margin-bottom:14px"><span class="muted" style="font-weight:600">Window</span>
+        <span id="winChips" class="row" style="gap:6px"></span></div>
+
+      <div class="grid g4">
+        <div class="card stat"><i class="sq" style="background:var(--sky)"></i><div class="num" id="sTotal">0</div><div class="lab">Total signals</div><div class="sub" id="sTotalChg"></div></div>
+        <div class="card stat"><i class="sq" style="background:var(--mint)"></i><div class="num" id="sPos">0</div><div class="lab">Positive</div><div class="sub muted" id="sPosPct"></div></div>
+        <div class="card stat"><i class="sq" style="background:var(--coral-l)"></i><div class="num" id="sNeg">0</div><div class="lab">Negative</div><div class="sub muted" id="sNegPct"></div></div>
+        <div class="card stat"><i class="sq" style="background:var(--soft)"></i><div class="num" id="sNeu">0</div><div class="lab">Neutral</div><div class="sub muted" id="sNeuPct"></div></div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card"><h3>Signals by Event Type</h3>
+          <div class="donutwrap"><div class="donutbox"><canvas id="cDonut"></canvas><div class="donutc"><b id="dTotal">0</b><span>signals</span></div></div><div class="legend" id="dLegend"></div></div></div>
+        <div class="card"><h3>Sentiment Trend <small id="trendWin">(last 6h)</small></h3><div class="chartbox"><canvas id="cTrend"></canvas></div></div>
+      </div>
+
+      <div class="card"><h3>Top 5 Assets by Risk Score <small>strong news in either direction raises risk; sector news counts at half strength</small></h3>
+        <table><thead><tr><th>#</th><th>Asset</th><th>Risk score</th><th class="r">Change (24h)</th><th>Main driver</th></tr></thead><tbody id="riskRows"></tbody></table></div>
+    </div>
+
+    <!-- ============ TAB 2: INDEX REBALANCING ============ -->
+    <div class="tab" id="tab-index">
+      <div class="title"><h1>Index Rebalancing <em class="serif">Module</em></h1><p>Dynamic index weights driven by real-time company sentiment</p></div>
+      <div class="rules" id="rules"></div>
+      <div class="card" style="margin-bottom:14px"><h3>Index Weights Over Time <small>top 5 now, rest as Others</small></h3><div class="chartbox tall"><canvas id="cWeights"></canvas></div></div>
+      <div class="card" style="margin-bottom:14px"><h3>Current vs Starting Weights <small>start = equal weight</small></h3>
+        <div class="tscroll"><table><thead><tr><th>Asset</th><th>Sector</th><th class="r">Start</th><th class="r">Current</th><th class="r">Change</th><th class="r">Score</th></tr></thead><tbody id="wRows"></tbody></table></div></div>
+      <div id="perfCard">
+        <div class="grid g4">
+          <div class="card stat"><i class="sq" style="background:var(--lav)"></i><div class="num" id="pRet">&ndash;</div><div class="lab">Dynamic index return</div></div>
+          <div class="card stat"><i class="sq" style="background:var(--stone)"></i><div class="num" id="pBench">&ndash;</div><div class="lab">Equal-weight return</div></div>
+          <div class="card stat"><i class="sq" style="background:var(--mint)"></i><div class="num" id="pExcess">&ndash;</div><div class="lab">Excess return</div></div>
+          <div class="card stat"><i class="sq" style="background:var(--peach)"></i><div class="num" id="pTE">&ndash;</div><div class="lab">Tracking error</div><div class="sub muted" id="pObs"></div></div>
+        </div>
+        <div class="card"><h3>Index Performance vs Equal-Weight Benchmark <small id="pNote">daily closes, base 100</small></h3><div class="chartbox"><canvas id="cPerf"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- ============ TAB 3: STRESS TESTING ============ -->
+    <div class="tab" id="tab-stress">
+      <div class="title"><h1>Stress Testing <em class="serif">Module</em></h1><p>Simulate market shocks and assess portfolio vulnerability</p></div>
+      <div class="banner NORMAL" id="banner"><span class="st" id="bStatus">NORMAL</span><div class="msg" id="bMsg"></div></div>
+      <div class="mode" id="modeLine"></div>
+
+      <div class="note" id="stressEmpty" style="display:none">No event reached the stress-test level in this window. Pick a scenario below, or move the sliders and press Fire Scenario.</div>
+      <div id="stressBody">
+        <div class="grid g4">
+          <div class="card stat"><i class="sq" style="background:var(--sky)"></i><div class="num" id="vBefore">&ndash;</div><div class="lab">Value before (USD)</div></div>
+          <div class="card stat"><i class="sq" style="background:var(--lav)"></i><div class="num" id="vAfter">&ndash;</div><div class="lab">Value after (USD)</div></div>
+          <div class="card stat"><i class="sq" style="background:var(--coral-l)"></i><div class="num" id="vPnl">&ndash;</div><div class="lab">Profit / loss</div><div class="sub" id="vPct"></div></div>
+          <div class="card stat"><i class="sq" style="background:var(--peach)"></i><div class="num" id="vWorst">&ndash;</div><div class="lab">Worst sector</div><div class="sub muted" id="vWorstPct"></div></div>
+        </div>
+        <div class="grid g21">
+          <div class="card"><h3>Portfolio Value <small>before vs after shock, 30 days, base 100</small></h3><div class="chartbox"><canvas id="cPath"></canvas></div></div>
+          <div class="card"><h3>Loss Breakdown by Sector</h3><div class="chartbox"><canvas id="cSector"></canvas></div></div>
+        </div>
+        <div class="grid g2">
+          <div class="card"><h3>What drove the result <small>USD, by shock factor</small></h3><div class="chips" id="factors"></div>
+            <h3 style="margin-top:16px">By asset type</h3><table><tbody id="typeRows"></tbody></table></div>
+          <div class="card"><h3>Biggest losing positions</h3><table><thead><tr><th>Counterparty</th><th>Type</th><th class="r">P&amp;L</th></tr></thead><tbody id="loserRows"></tbody></table></div>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card"><h3>Shock Parameters</h3><div class="sliders" id="sliders"></div><button class="fire" id="fire">Fire Scenario</button></div>
+        <div class="card"><h3>Predefined Scenarios</h3><div class="btns" id="scen"></div>
+          <p class="muted" style="margin:14px 0 0;font-size:12.5px">A scenario sets all four sliders and runs at once. The automatic test uses the highest-impact event of the last window and scales the shock by its impact (7 = full shock).</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="overlay" id="overlay"><div><h2>No signals yet</h2><p class="muted">Run <code>python -m src.engine live</code>, then reload this page.</p></div></div>
+
+<script>
+'use strict';
+// ---------------------------------------------------------------- helpers
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sgn = v => (v > 0 ? '+' : '') + v;
+const fmtM = v => (v / 1e6).toLocaleString('en-US', {maximumFractionDigits: 1, minimumFractionDigits: 1}) + 'M';
+const fmtSM = v => (v < 0 ? '-' : v > 0 ? '+' : '') + fmtM(Math.abs(v));
+const hhmm = iso => new Date(iso).toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
+const dayhm = iso => new Date(iso).toLocaleString('en-GB', {day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC'});
+const full = iso => new Date(iso).toLocaleString('en-GB', {day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'UTC'});
+
+const EV = {'Geopolitical':'#c2514a','Macroeconomic':'#2f66c8','Credit Event':'#c9972b','Merger/Acquisition':'#12935e',
+            'Product Launch':'#d9792f','Earnings':'#12a4b8','Regulatory/Legal':'#5f7a99','Other':'#9aa7b8'};
+const SENT = {Positive:'#12935e', Negative:'#d64545', Neutral:'#8393a8'};
+const LINES = ['#2f66c8','#12935e','#d64545','#c9972b','#12a4b8','#7a8aa0'];
+const INK = '#0b1f3a', GRID = 'rgba(11,31,58,.09)', TICK = '#4f5f78';
+const ICON_PLAY = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2h3.2v12H3.5zM9.3 2h3.2v12H9.3z"/></svg>';
+
+const S = {mode:'replay', playing:false, speed:1, asOf:null, start:0, end:0, tab:'risk', windowH:6, busy:false, pending:false,
+           ov:null, charts:{}, filters:{sent:'', ev:''}, liveTimer:null, playTimer:null, debounce:null,
+           stress:{mode:'auto', custom:null, selected:null, ranges:null, vals:{rate_bps:0, oil_pct:0, vix_pct:0, gdp_pts:0}}};
+
+async function api(path, params, opt) {
+  const q = new URLSearchParams();
+  Object.entries(params || {}).forEach(([k, v]) => { if (v !== null && v !== undefined && v !== '') q.set(k, v); });
+  const r = await fetch(path + (q.toString() ? '?' + q.toString() : ''), opt);
+  if (!r.ok) {
+    let d = '';
+    try { d = (await r.json()).detail || ''; } catch (e) {}
+    throw new Error(r.status + ' ' + (d || r.statusText || 'error'));
+  }
+  return r.json();
+}
+function setStatus(kind, msg) {
+  const el = $('#status');
+  el.className = kind === 'err' ? 'err' : '';
+  el.textContent = kind === 'err' ? 'API error: ' + msg : 'updated ' + new Date().toLocaleTimeString('en-GB', {timeZone: 'UTC'}) + ' UTC';
+}
+
+// ---------------------------------------------------------------- charts (Chart.js), created once then updated in place
+const markerPlugin = {id: 'marker', afterDatasetsDraw(chart) {
+  if (chart.$marker == null) return;
+  const x = chart.scales.x.getPixelForValue(chart.$marker), a = chart.chartArea, c = chart.ctx;
+  c.save(); c.setLineDash([4, 4]); c.strokeStyle = INK; c.lineWidth = 1; c.beginPath(); c.moveTo(x, a.top); c.lineTo(x, a.bottom); c.stroke();
+  c.setLineDash([]); c.fillStyle = INK; c.font = '600 11px Inter'; c.fillText('shock', x + 5, a.top + 11); c.restore();
+}};
+const valuePlugin = {id: 'valueLabels', afterDatasetsDraw(chart) {
+  if (!chart.$labels) return;
+  const ds = chart.data.datasets[0], meta = chart.getDatasetMeta(0), c = chart.ctx;
+  c.save(); c.font = '700 11px Inter'; c.fillStyle = INK; c.textBaseline = 'middle';
+  meta.data.forEach((bar, i) => { const v = ds.data[i]; c.textAlign = v < 0 ? 'right' : 'left'; c.fillText(sgn(v.toFixed(1)) + '%', bar.x + (v < 0 ? -6 : 6), bar.y); });
+  c.restore();
+}};
+if (typeof Chart !== 'undefined') {
+  Chart.register(markerPlugin, valuePlugin);
+  Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+  Chart.defaults.color = TICK;
+  Chart.defaults.animation = false;
+}
+function upsert(id, type, data, options, extra) {
+  if (typeof Chart === 'undefined') return null;
+  let c = S.charts[id];
+  if (!c) {
+    const el = $('#' + id);
+    c = S.charts[id] = new Chart(el, {type, data, options: Object.assign({responsive: true, maintainAspectRatio: false}, options)});
+  } else {
+    c.data.labels = data.labels; c.data.datasets = data.datasets;
+    if (options && options.scales) c.options.scales = options.scales;
+  }
+  Object.assign(c, extra || {});
+  c.update('none');
+  return c;
+}
+const axes = (o) => ({x: Object.assign({grid: {display: false}, ticks: {maxTicksLimit: 8, maxRotation: 0}}, o && o.x),
+                      y: Object.assign({grid: {color: GRID}, ticks: {}}, o && o.y)});
+const lineDs = (label, data, color, extra) => Object.assign({label, data, borderColor: color, backgroundColor: color, borderWidth: 2.2, pointRadius: 0, pointHoverRadius: 4, tension: .25, spanGaps: true}, extra || {});
+
+// ---------------------------------------------------------------- left panel: signal feed
+// Each card: entity + source/time (top), headline, then sentiment (label + score), event type and impact.
+function renderFeed() {
+  const rows = (S.ov && S.ov.feed || []).filter(s => (!S.filters.sent || s.label === S.filters.sent) && (!S.filters.ev || s.event === S.filters.ev));
+  $('#fcount').textContent = rows.length;
+  $('#feed').innerHTML = rows.map(s =>
+    `<article class="sig"><div class="top"><span class="ent">${esc(s.entity)}</span><span class="when">${esc(s.source)} &middot; ${dayhm(s.ts)}</span></div>` +
+    `<div class="hl" title="${esc(s.headline)}">${esc(s.headline)}</div>` +
+    `<div class="meta"><span class="pill ${esc(s.label)}">${esc(s.label)} ${sgn((s.score ?? 0).toFixed(2))}</span>` +
+    `<span class="evt"><i style="--c:${EV[s.event] || EV.Other}"></i>${esc(s.event)}</span>` +
+    `<span class="imp ${s.impact >= 7 ? 'hi' : ''}">Impact ${(s.impact ?? 0).toFixed(1)}</span></div></article>`
+  ).join('') || '<div class="muted" style="padding:20px 4px">No signals at this time.</div>';
+}
+
+// ---------------------------------------------------------------- tab 1: risk engine
+function chg(v) {
+  if (v === null || v === undefined) return '<span class="flat">no earlier window to compare</span>';
+  return `<span class="${v > 0 ? 'up' : v < 0 ? 'down' : 'flat'}">${v > 0 ? '&#9650;' : v < 0 ? '&#9660;' : '&ndash;'} ${Math.abs(v)}% vs previous ${S.windowH}h</span>`;
+}
+function renderRisk(ov) {
+  const o = ov.overview;
+  $('#sTotal').textContent = o.total; $('#sTotalChg').innerHTML = chg(o.total_change_pct);
+  [['Pos', 'positive'], ['Neg', 'negative'], ['Neu', 'neutral']].forEach(([id, k]) => {
+    $('#s' + id).textContent = o[k].count; $('#s' + id + 'Pct').textContent = o[k].pct + '% of signals';
+  });
+  $('#trendWin').textContent = `(last ${S.windowH}h)`;
+
+  // donut + legend
+  const ev = ov.events;
+  $('#dTotal').textContent = o.total;
+  $('#dLegend').innerHTML = ev.map(e => `<div><i style="background:${EV[e.event] || EV.Other}"></i>${esc(e.event)}<b>${e.pct}%</b></div>`).join('') || '<span class="muted">no signals in this window</span>';
+  upsert('cDonut', 'doughnut', {labels: ev.map(e => e.event), datasets: [{data: ev.map(e => e.count), backgroundColor: ev.map(e => EV[e.event] || EV.Other), borderColor: '#ffffff', borderWidth: 2}]},
+    {cutout: '66%', plugins: {legend: {display: false}}});
+
+  // trend lines
+  const t = ov.trend;
+  upsert('cTrend', 'line', {labels: t.t.map(hhmm), datasets: [lineDs('Positive', t.positive, SENT.Positive), lineDs('Negative', t.negative, SENT.Negative), lineDs('Neutral', t.neutral, SENT.Neutral)]},
+    {interaction: {mode: 'index', intersect: false}, plugins: {legend: {position: 'bottom', labels: {usePointStyle: true, boxWidth: 8}}},
+     scales: axes({y: {min: -1, max: 1, title: {display: true, text: 'avg sentiment'}}})});
+
+  // top 5 risk
+  $('#riskRows').innerHTML = ov.top_risk.map(r => {
+    const d = r.driver, c = r.change_24h;
+    return `<tr><td>${r.rank}</td><td><b>${esc(r.ticker)}</b> <span class="tag">${esc(r.sector)}</span></td>` +
+      `<td><div class="rbar"><div class="bar"><span style="width:${Math.round(r.risk * 100)}%"></span></div><b>${r.risk.toFixed(2)}</b></div></td>` +
+      `<td class="r ${c > 0 ? 'down' : c < 0 ? 'up' : 'flat'}"><b>${c > 0 ? '&#9650;' : c < 0 ? '&#9660;' : '&ndash;'} ${Math.abs(c).toFixed(2)}</b></td>` +
+      `<td>${d ? `<span class="tag">${esc(d.event)}</span> <span class="drv" title="${esc(d.headline)}">${esc(d.headline)}</span>` : '<span class="muted">no news yet</span>'}</td></tr>`;
+  }).join('');
+}
+
+// ---------------------------------------------------------------- tab 2: index rebalancing
+function renderIndex(r) {
+  const ru = r.rules;
+  $('#rules').innerHTML = [`rebalance every ${ru.rebalance_every_hours}h`, `weights ${Math.round(ru.min_weight * 100)}&ndash;${Math.round(ru.max_weight * 100)}%`,
+    `max ${Math.round(ru.turnover_cap * 100)}% turnover per step`, 'weight = start &times; (1 + sentiment score)', `${ru.rebalances} rebalances so far`,
+    `last turnover ${ru.last_turnover_pct}%`].map(x => `<span>${x}</span>`).join('');
+
+  const ws = r.weights_series, keys = Object.keys(ws.weights);
+  upsert('cWeights', 'line', {labels: ws.t.map(dayhm), datasets: keys.map((k, i) => lineDs(k, ws.weights[k].map(v => +(v * 100).toFixed(2)), k === 'Others' ? '#7a8aa0' : LINES[i % LINES.length], {stepped: 'after', borderWidth: k === 'Others' ? 1.6 : 2.4}))},
+    {interaction: {mode: 'index', intersect: false}, plugins: {legend: {position: 'bottom', labels: {usePointStyle: true, boxWidth: 8}}},
+     scales: axes({y: {title: {display: true, text: 'weight %'}, ticks: {callback: v => v + '%'}}})});
+
+  $('#wRows').innerHTML = r.table.map(w => `<tr><td><b>${esc(w.ticker)}</b></td><td><span class="tag">${esc(w.sector)}</span></td>` +
+    `<td class="r">${(w.start * 100).toFixed(1)}%</td><td class="r"><b>${(w.current * 100).toFixed(1)}%</b></td>` +
+    `<td class="r ${w.change_pp > 0 ? 'up' : w.change_pp < 0 ? 'down' : 'flat'}"><b>${w.change_pp > 0 ? '&#9650;' : w.change_pp < 0 ? '&#9660;' : '&ndash;'} ${Math.abs(w.change_pp).toFixed(2)} pp</b></td>` +
+    `<td class="r ${w.score > 0 ? 'up' : w.score < 0 ? 'down' : 'flat'}">${sgn(w.score.toFixed(2))}</td></tr>`).join('');
+
+  const p = r.performance;
+  $('#perfCard').style.display = p && p.available ? 'block' : 'none';     // no prices: the whole panel is hidden
+  if (p && p.available) {
+    const has = p.obs > 0, pc = v => v === null || v === undefined ? '&ndash;' : sgn(v.toFixed(2)) + '%';
+    $('#pRet').innerHTML = has ? pc(p.total_return_pct) : '&ndash;'; $('#pBench').innerHTML = has ? pc(p.benchmark_return_pct) : '&ndash;';
+    $('#pExcess').innerHTML = has ? pc(p.excess_pct) : '&ndash;';
+    $('#pTE').innerHTML = p.tracking_error_pct == null ? 'n/a' : p.tracking_error_pct.toFixed(2) + '%';
+    $('#pObs').textContent = has ? `${p.obs} daily return${p.obs > 1 ? 's' : ''}${p.tracking_error_pct == null ? ' (needs 3+)' : ''}` : 'needs at least one full trading day';
+    $('#pNote').textContent = 'daily closes, base 100';
+    upsert('cPerf', 'line', {labels: p.dates.map(dayhm), datasets: [lineDs('Dynamic index', p.dynamic, '#2f66c8', {borderWidth: 2.6, pointRadius: 3}), lineDs('Equal-weight index', p.benchmark, '#7a8aa0', {borderDash: [5, 4], pointRadius: 3})]},
+      {interaction: {mode: 'index', intersect: false}, plugins: {legend: {position: 'bottom', labels: {usePointStyle: true, boxWidth: 8}}}, scales: axes()});
+  }
+}
+
+// ---------------------------------------------------------------- tab 3: stress testing
+function renderBanner(a) {
+  const b = a.banner, lvl = b.status === 'HIGH RISK' ? 'HIGH' : b.status;
+  $('#banner').className = 'banner ' + lvl; $('#bStatus').textContent = b.status;
+  const tr = a.result && a.result.trigger;
+  $('#bMsg').innerHTML = tr
+    ? `<b>Trigger: ${esc(tr.event)} &middot; impact ${tr.impact} &middot; shock x${tr.shock_scale}</b>${esc(tr.headline)} <span class="muted">(${b.trigger_count} event${b.trigger_count === 1 ? '' : 's'} at or above the trigger level in the last ${S.windowH}h)</span>`
+    : `<b>${b.status === 'NORMAL' ? 'No event at the stress-test level' : 'Elevated signals, but no event type that maps to a shock'}</b>Highest impact in the last ${S.windowH}h: ${b.max_impact ?? 0}`;
+}
+function renderResult(res) {
+  $('#stressEmpty').style.display = res ? 'none' : 'block';
+  $('#stressBody').style.display = res ? 'block' : 'none';
+  if (!res) return;
+  $('#vBefore').textContent = fmtM(res.before); $('#vAfter').textContent = fmtM(res.after); $('#vPnl').textContent = fmtSM(res.pnl);
+  $('#vPct').innerHTML = `<span class="${res.pnl < 0 ? 'down' : 'up'}">${sgn(res.pnl_pct)}%</span>`;
+  const w = res.by_sector[0]; $('#vWorst').textContent = w.name; $('#vWorstPct').textContent = sgn(w.pnl_pct) + '% of its value';
+
+  const p = res.path;
+  upsert('cPath', 'line', {labels: p.day.map(d => 'Day ' + d), datasets: [lineDs('Before shock', p.before_idx, '#7a8aa0', {borderDash: [5, 4]}), lineDs('After shock', p.after_idx, '#d64545', {borderWidth: 2.8})]},
+    {interaction: {mode: 'index', intersect: false}, plugins: {legend: {position: 'bottom', labels: {usePointStyle: true, boxWidth: 8}}},
+     scales: axes({y: {ticks: {callback: v => v}}})}, {$marker: p.shock_day});
+
+  const sec = res.by_sector.slice();
+  upsert('cSector', 'bar', {labels: sec.map(s => s.name), datasets: [{data: sec.map(s => s.pnl_pct), backgroundColor: sec.map(s => s.pnl_pct < 0 ? '#d64545' : '#12935e'), borderRadius: 4, barThickness: 20}]},
+    {indexAxis: 'y', plugins: {legend: {display: false}, tooltip: {callbacks: {label: c => `${sgn(c.parsed.x.toFixed(2))}%  (${fmtSM(sec[c.dataIndex].pnl)})`}}},
+     layout: {padding: {right: 46, left: 4}}, scales: {x: {grid: {color: GRID}, grace: '12%', ticks: {callback: v => v + '%'}}, y: {grid: {display: false}}}}, {$labels: true});
+
+  const f = res.by_factor, names = {rates: 'Interest rates', oil: 'Oil', vix: 'VIX', gdp: 'GDP growth', sector: 'Sector hit'};
+  $('#factors').innerHTML = Object.keys(names).map(k => `<div class="fchip"><b class="${f[k] < 0 ? 'down' : f[k] > 0 ? 'up' : 'flat'}">${fmtSM(f[k])}</b>${names[k]}</div>`).join('');
+  $('#typeRows').innerHTML = res.by_type.map(t => `<tr><td><b>${esc(t.name)}</b></td><td class="r">${fmtM(t.before)}</td><td class="r ${t.pnl < 0 ? 'down' : 'up'}"><b>${sgn(t.pnl_pct)}%</b></td></tr>`).join('');
+  $('#loserRows').innerHTML = res.top_losers.slice(0, 6).map(l => `<tr><td><b>${esc(l.counterparty)}</b> <span class="muted">${esc(l.sector)}</span></td><td>${esc(l.type)}</td><td class="r down"><b>${fmtSM(l.pnl)}</b> <span class="muted">${sgn(l.pct)}%</span></td></tr>`).join('');
+}
+function renderStress(a) {
+  renderBanner(a);
+  const custom = S.stress.mode === 'custom' && S.stress.custom;
+  $('#modeLine').innerHTML = custom
+    ? `Showing: <b>${esc(S.stress.custom.label)}</b> <button class="chipbtn" id="backAuto">Back to automatic test</button>`
+    : 'Showing: <b>automatic test</b> from the highest-impact event in the window';
+  const back = $('#backAuto'); if (back) back.onclick = () => { S.stress.mode = 'auto'; S.stress.selected = null; paintScen(); refresh(); };
+  renderResult(custom ? S.stress.custom : a.result);
+}
+function paintSliders() {
+  const SL = [['rate_bps', 'Interest rate shock', ' bps', 25], ['oil_pct', 'Oil price shock', '%', 5], ['vix_pct', 'VIX change', '%', 5], ['gdp_pts', 'GDP growth shock', ' pts', 0.5]];
+  const rg = S.stress.ranges || {};
+  $('#sliders').innerHTML = SL.map(([k, label, unit, step]) => {
+    const [lo, hi] = rg[k] || [-100, 100];
+    return `<div class="srow"><label>${label}</label><input type="range" data-k="${k}" min="${lo}" max="${hi}" step="${step}" value="${S.stress.vals[k]}"><output id="o_${k}">${sgn(S.stress.vals[k])}${unit}</output></div>`;
+  }).join('');
+  $$('#sliders input').forEach(inp => inp.oninput = () => {
+    const k = inp.dataset.k, u = SL.find(s => s[0] === k)[2];
+    S.stress.vals[k] = +inp.value; $('#o_' + k).textContent = sgn(+inp.value) + u; S.stress.selected = null; paintScen();
+  });
+}
+function paintScen() {
+  $$('#scen button').forEach(b => b.classList.toggle('on', b.dataset.name === S.stress.selected));
+}
+async function fireStress(body, name) {
+  try {
+    const res = await api('/api/stress/run', {}, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+    S.stress.mode = 'custom'; S.stress.custom = res; S.stress.selected = name || null;
+    Object.assign(S.stress.vals, res.shock); paintSliders(); paintScen();
+    renderResult(res); $('#modeLine').innerHTML = `Showing: <b>${esc(res.label)}</b> <button class="chipbtn" id="backAuto">Back to automatic test</button>`;
+    $('#backAuto').onclick = () => { S.stress.mode = 'auto'; S.stress.selected = null; paintScen(); refresh(); };
+    setStatus('ok');
+  } catch (e) { setStatus('err', e.message); }
+}
+
+// ---------------------------------------------------------------- refresh loop (one call per screen)
+async function refresh() {
+  if (S.busy) { S.pending = true; return; }
+  S.busy = true;
+  try {
+    const asOf = S.mode === 'replay' && S.asOf ? new Date(S.asOf).toISOString() : null;
+    const ov = await api('/api/overview', {as_of: asOf, hours: S.windowH});
+    S.ov = ov;
+    $('#clock').innerHTML = full(ov.as_of) + `<small>${S.mode === 'live' ? 'latest signal' : 'replay time'} &middot; UTC</small>`;
+    renderFeed();
+    if (S.tab === 'risk') renderRisk(ov);
+    else if (S.tab === 'index') renderIndex(await api('/api/rebalance', {as_of: asOf}));
+    else renderStress(await api('/api/stress/auto', {as_of: asOf, hours: S.windowH}));
+    setStatus('ok');
+  } catch (e) { setStatus('err', e.message); }
+  finally { S.busy = false; if (S.pending) { S.pending = false; refresh(); } }
+}
+
+// ---------------------------------------------------------------- live / replay controls
+function syncSlider() { $('#slider').value = S.end > S.start ? Math.round((S.asOf - S.start) / (S.end - S.start) * 1000) : 1000; }
+function setPlaying(p) {
+  S.playing = p; $('#play').innerHTML = p ? ICON_PAUSE : ICON_PLAY;
+  clearInterval(S.playTimer);
+  if (p) { if (S.asOf >= S.end) { S.asOf = S.start; syncSlider(); } S.playTimer = setInterval(tick, 1000); }
+}
+function tick() {
+  if (S.busy) return;
+  S.asOf = Math.min(S.end, S.asOf + 10 * 60 * 1000 * S.speed);          // 1x = 10 minutes of signals per second
+  syncSlider(); if (S.asOf >= S.end) setPlaying(false);
+  refresh();
+}
+function setMode(m) {
+  S.mode = m; setPlaying(false); clearInterval(S.liveTimer);
+  $('#mLive').classList.toggle('on', m === 'live'); $('#mReplay').classList.toggle('on', m === 'replay');
+  ['#play', '#slider', '#speed'].forEach(s => { $(s).disabled = m === 'live'; });
+  if (m === 'live') { S.asOf = null; S.liveTimer = setInterval(refresh, 20000); }
+  else { S.asOf = S.end; syncSlider(); }
+  refresh();
+}
+function setTab(t) {
+  S.tab = t;
+  $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  $$('.tab').forEach(x => x.classList.toggle('active', x.id === 'tab-' + t));
+  refresh();
+}
+
+// ---------------------------------------------------------------- start
+async function init() {
+  Object.keys(EV).filter(e => e !== 'Other').concat(['Other']).forEach(e => { const o = document.createElement('option'); o.textContent = e; $('#fEvent').appendChild(o); });
+  $('#winChips').innerHTML = [1, 3, 6, 12, 24].map(h => `<button class="chipbtn ${h === S.windowH ? 'on' : ''}" data-h="${h}">Last ${h}h</button>`).join('');
+  $$('#winChips button').forEach(b => b.onclick = () => { S.windowH = +b.dataset.h; $$('#winChips button').forEach(x => x.classList.toggle('on', x === b)); refresh(); });
+  $$('#tabs button').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  $('#fSent').onchange = e => { S.filters.sent = e.target.value; renderFeed(); };
+  $('#fEvent').onchange = e => { S.filters.ev = e.target.value; renderFeed(); };
+  $('#mLive').onclick = () => setMode('live'); $('#mReplay').onclick = () => setMode('replay');
+  $('#play').onclick = () => setPlaying(!S.playing);
+  $('#speed').onchange = e => { S.speed = +e.target.value; };
+  $('#slider').oninput = e => {
+    S.asOf = S.start + (S.end - S.start) * (+e.target.value / 1000); setPlaying(false);
+    clearTimeout(S.debounce); S.debounce = setTimeout(refresh, 150);
+  };
+  $('#fire').onclick = () => fireStress({rate_bps: S.stress.vals.rate_bps, oil_pct: S.stress.vals.oil_pct, vix_pct: S.stress.vals.vix_pct, gdp_pts: S.stress.vals.gdp_pts});
+  if (typeof Chart === 'undefined') setStatus('err', 'charts could not load (is the internet on?)');
+
+  try {
+    const [tl, sc] = await Promise.all([api('/api/timeline'), api('/api/stress/scenarios')]);
+    $('#speed').innerHTML = (tl.speeds || [1, 2, 5, 10]).map(s => `<option value="${s}">${s}x</option>`).join('');
+    S.stress.ranges = sc.ranges; paintSliders();
+    $('#scen').innerHTML = sc.scenarios.map(s => `<button class="btn" data-name="${esc(s.name)}">${esc(s.name)}</button>`).join('');
+    $$('#scen button').forEach(b => b.onclick = () => fireStress({scenario: b.dataset.name}, b.dataset.name));
+    if (!tl.start) { $('#overlay').classList.add('show'); setStatus('err', 'no signals yet'); return; }
+    S.start = Date.parse(tl.start); S.end = Date.parse(tl.end);
+    setMode(tl.default_mode === 'live' ? 'live' : 'replay');           // replay opens at the end of the window
+  } catch (e) { setStatus('err', e.message); }
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
