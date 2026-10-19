@@ -31,7 +31,7 @@ def ensure_dirs():
 # "live"   = fetch fresh data from the internet now (and cache it to data/raw)
 # "replay" = play back the recent window recorded by earlier live runs
 MODE = os.getenv("RISK_MODE", "replay")
-REPLAY_DAYS = 3                         # Replay plays back the last 3 days of recorded signals
+REPLAY_DAYS = 7                        # Replay plays back the last 3 days of recorded signals
 REPLAY_SPEEDS = [1, 2, 5, 10]           # speed control in the dashboard header
 
 # ---------------------------------------------------------------- secrets
@@ -60,7 +60,8 @@ SOURCES = {
 }
 LIVE_SOURCES = [k for k, v in SOURCES.items() if v["origin"] == "live"]
 
-# GDELT DOC API topic searches (market-wide news, one request every ~5 seconds)
+# GDELT DOC API topic searches (market-wide news)
+GDELT_PAUSE_S = 10                      # seconds between searches; GDELT answers 429 if you go faster
 GDELT_QUERIES = {
     "geopolitical": "(sanctions OR war OR missile OR tariffs OR ceasefire)",
     "macro":        '(inflation OR recession OR "interest rates" OR "central bank" OR GDP)',
@@ -96,8 +97,8 @@ SEC_ITEM_TO_EVENT = {
 }
 
 # ---------------------------------------------------------------- scoring rules
-SENT_POS = 0.15                         # score >= +0.15 -> Positive
-SENT_NEG = -0.15                        # score <= -0.15 -> Negative, else Neutral
+SENT_POS = 0.30                         # score >= +0.30 -> Positive (0.30 scored 85.7% on the Kaggle sample, 0.15 only 78%)
+SENT_NEG = -0.30                        # score <= -0.30 -> Negative, else Neutral
 IMPACT_MIN, IMPACT_MAX = 1.0, 10.0
 STRESS_TRIGGER_IMPACT = 7.0             # Module B fires a stress test at or above this
 RISK_HALF_LIFE_H = 24                   # older signals count half as much every 24h
@@ -114,7 +115,7 @@ DEDUP_WINDOW_H = 6
 # event classification (rules first, zero-shot model only for unclear texts)
 ZEROSHOT_MODEL = "typeform/distilbert-base-uncased-mnli"   # small, CPU-friendly; swap for
                                                            # "facebook/bart-large-mnli" if you want accuracy over speed
-ZS_MIN_SCORE = 0.45                     # below this the zero-shot answer is treated as "Other"
+ZS_MIN_SCORE = 0.55                     # below this the zero-shot answer is treated as "Other"
 
 # impact is scored relative to recent news (see events.py)
 IMPACT_WINDOW_H = 72                    # compare each signal with the last 72 hours...

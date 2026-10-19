@@ -1,26 +1,33 @@
 {
-  "generated_at": "2026-10-11T11:35:18+00:00",
+  "generated_at": "2026-10-19T14:22:46+00:00",
   "mode": "live",
-  "window_days": 3,
-  "signals": 461,
-  "duplicates_merged": 11,
-  "irrelevant_dropped": 21,
-  "ts_min": "2026-10-08T11:25:39+00:00",
-  "ts_max": "2026-10-11T11:18:54+00:00",
+  "window_days": 7,
+  "signals": 1296,
+  "duplicates_merged": 56,
+  "irrelevant_dropped": 626,
+  "dropped_detail": {
+    "search": 47,
+    "filler": 78,
+    "off_topic": 501
+  },
+  "ts_min": "2026-10-12T20:18:00+00:00",
+  "ts_max": "2026-10-19T14:10:58+00:00",
   "sentiment_model": "finbert",
-  "high_impact": 49,
+  "high_impact": 156,
   "by_source": {
-    "newsapi": 270,
-    "rss": 191
+    "newsapi": 517,
+    "rss": 472,
+    "gdelt": 302,
+    "sec_8k": 5
   },
   "by_event": {
-    "Other": 329,
-    "Earnings": 40,
-    "Macroeconomic": 33,
-    "Product Launch": 27,
-    "Regulatory/Legal": 14,
-    "Merger/Acquisition": 8,
-    "Geopolitical": 8,
-    "Credit Event": 2
+    "Other": 681,
+    "Earnings": 155,
+    "Product Launch": 130,
+    "Regulatory/Legal": 109,
+    "Macroeconomic": 92,
+    "Geopolitical": 70,
+    "Merger/Acquisition": 43,
+    "Credit Event": 16
   }
 }

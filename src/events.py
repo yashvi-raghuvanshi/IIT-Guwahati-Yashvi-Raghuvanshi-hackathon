@@ -16,12 +16,12 @@ from src import config as C
 KEYWORDS = {
     "Geopolitical": ["wars?", "sanctions?", "invasion", "invad(?:e|es|ed)", "missiles?", "ceasefire", "cease-fire",
                      "tariffs?", "trade war", "tensions?", "conflict", "nato", "embargo", "airstrikes?",
-                     "military", "defen[cs]e", "coup", "geopolitic\\w*", "middle east", "ukraine", "taiwan strait", "red sea"],
+                     "military", "defen[cs]e", "coup", "geopolitic\\w*", "middle east", "ukraine", "taiwan strait", "red sea", "drones?", "intercept\\w*", "attacks?", "bomb\\w*", "troops", "terror\\w*", "hostages?"],
     "Macroeconomic": ["inflation", "cpi", "ppi", "gdp", "recession", "unemployment", "jobless", "payrolls?",
                       "nonfarm", "pmi", "consumer confidence", "retail sales", "stagflation", "economic slowdown",
                       "rate hikes?", "rate cuts?", "interest rates?", "federal reserve", "(?-i:Fed)", "central bank",
                       "ecb", "rbi", "repo rate", "monetary policy", "(?:bond|treasury) yields?", "bond markets?",
-                      "consumer sentiment", "rupee", "economy", "economic", "oil prices?", "crude"],
+                      "consumer sentiment", "rupee", "economy", "economic", "oil prices?", "crude", "brent", "diesel", "gasoline", "gas prices", "fuel prices"],
     "Credit Event": ["defaults?", "defaulted", "bankruptcy", "bankrupt", "chapter 11", "insolvency", "insolvent",
                      "credit rating", "credit downgrade", "debt downgrade", "sovereign downgrade", "junk status",
                      "debt restructuring", "bank run", "liquidity crisis", "credit crunch", "missed payment",
@@ -36,7 +36,7 @@ KEYWORDS = {
                  "net income", "operating income"],
     "Regulatory/Legal": ["lawsuits?", "sues?", "sued", "antitrust", "(?-i:SEC)", "probe", "investigations?",
                          "investigates?", "settlement", "regulators?", "fined", "fines", "fda", "ftc", "doj",
-                         "justice department", "class action", "court", "judge", "ruling", "ban(?:s|ned)?", "subpoena", "indict\\w*", "fraud"],
+                         "justice department", "class action", "court", "judge", "ruling", "arrest\\w*", "fbi", "charged with", "convicted", "sentenced", "ban(?:s|ned)?", "subpoena", "indict\\w*", "fraud"],
 }
 _PAT = {e: re.compile(r"\b(?:" + "|".join(k) + r")\b", re.I) for e, k in KEYWORDS.items()}
 

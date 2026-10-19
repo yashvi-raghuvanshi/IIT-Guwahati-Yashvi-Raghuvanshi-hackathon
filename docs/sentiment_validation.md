@@ -3,38 +3,38 @@
 Majority-class baseline accuracy: 57.3%
 
 
-## finbert: accuracy 78.0%, macro-F1 0.79 (threshold ±0.15)
+## finbert: accuracy 85.7%, macro-F1 0.86 (threshold ±0.3)
 
 Rows = true label, columns = predicted
 
 ```
 col_0     negative  neutral  positive
 label                                
-negative        43        0         0
-neutral         19      107        46
-positive         1        0        84
+negative        42        1         0
+neutral         11      134        27
+positive         0        4        81
 ```
 
 | class | precision | recall | F1 |
 |---|---|---|---|
-| negative | 0.68 | 1.00 | 0.81 |
-| neutral | 1.00 | 0.62 | 0.77 |
-| positive | 0.65 | 0.99 | 0.78 |
+| negative | 0.79 | 0.98 | 0.88 |
+| neutral | 0.96 | 0.78 | 0.86 |
+| positive | 0.75 | 0.95 | 0.84 |
 
-## vader: accuracy 53.7%, macro-F1 0.49 (threshold ±0.15)
+## vader: accuracy 59.3%, macro-F1 0.49 (threshold ±0.3)
 
 Rows = true label, columns = predicted
 
 ```
 col_0     negative  neutral  positive
 label                                
-negative        12       15        16
-neutral          8       90        74
-positive         5       21        59
+negative         7       24        12
+neutral          4      118        50
+positive         4       28        53
 ```
 
 | class | precision | recall | F1 |
 |---|---|---|---|
-| negative | 0.48 | 0.28 | 0.35 |
-| neutral | 0.71 | 0.52 | 0.60 |
-| positive | 0.40 | 0.69 | 0.50 |
+| negative | 0.47 | 0.16 | 0.24 |
+| neutral | 0.69 | 0.69 | 0.69 |
+| positive | 0.46 | 0.62 | 0.53 |

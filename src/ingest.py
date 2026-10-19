@@ -83,7 +83,7 @@ def fetch_gdelt(timespan="1d", per_query=50):
                 rows.append(_rec("gdelt", a["title"], ts))
         except Exception as ex:                 # one failed search must not throw away the others
             print(f"[warn] gdelt search '{name}' failed ({type(ex).__name__}); skipping it")
-        time.sleep(5.2)                         # GDELT allows ~1 request per 5 seconds
+        time.sleep(C.GDELT_PAUSE_S)             # GDELT asks for about 1 request per 5 seconds; we stay well below that
     return rows
 
 
@@ -110,16 +110,38 @@ def fetch_newsapi(batch=5):
     return rows
 
 
+BROWSER_UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
+              "Chrome/124.0 Safari/537.36")
+
+
+def _rss_entries(url):
+    """Download one feed ourselves with a browser-like User-Agent (some sites block feedparser's own).
+    Returns the entries, or None if the download failed."""
+    try:
+        return feedparser.parse(_get(url, retries=1, headers={"User-Agent": BROWSER_UA}).content).entries
+    except Exception:
+        return None
+
+
 def fetch_rss(per_company=15, per_feed=40):
     """Extra source: Google News (per company) + Economic Times + Moneycontrol."""
-    rows = []
+    rows, failed = [], []
     for tk, cfg in C.WATCHLIST.items():
         url = C.GOOGLE_NEWS_RSS.format(query=requests.utils.quote(f"{cfg['aliases'][0]} stock"))
-        for e in feedparser.parse(url).entries[:per_company]:
+        entries = _rss_entries(url)
+        if entries is None:
+            failed.append(f"google news {tk}")
+        for e in (entries or [])[:per_company]:
             rows.append(_rec("rss", e.get("title", ""), _feed_ts(e), ticker=tk))
-    for url in C.RSS_FEEDS.values():
-        for e in feedparser.parse(url).entries[:per_feed]:
+        time.sleep(0.3)
+    for name, url in C.RSS_FEEDS.items():
+        entries = _rss_entries(url)
+        if entries is None:
+            failed.append(name)
+        for e in (entries or [])[:per_feed]:
             rows.append(_rec("rss", f"{e.get('title', '')}. {e.get('summary', '')}", _feed_ts(e)))
+    if failed:
+        print(f"[warn] rss: {len(failed)} feed(s) could not be downloaded ({', '.join(failed[:5])}{'...' if len(failed) > 5 else ''})")
     return rows
 
 

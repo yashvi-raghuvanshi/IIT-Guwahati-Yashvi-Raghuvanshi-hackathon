@@ -17,6 +17,17 @@ import pandas as pd
 from src import config as C
 from src import entities, events, ingest, sentiment
 
+# 13F filler ("Stock Sold by ..."), deals and coupons: not market news
+FILLER = re.compile(r"\b(?:(?:shares|stock|position|stake|holdings?)\s+(?:sold|bought|acquired|purchased|raised|lowered|trimmed|lifted|cut|boosted)\s+by"
+                    r"|(?:acquires?|buys|takes|opens)\s+(?:a\s+)?new\s+(?:stake|position)|free\s+(?:shipping|delivery)|promo(?:tion)?\s+code"
+                    r"|coupon|\d+%\s+off|sign-?up\s+bonus)\b", re.I)
+# a story about no company and no event is kept only if it at least sounds like markets or the economy
+FINANCE = re.compile(r"\b(?:stocks?|shares|markets?|invest\w*|funds?|etfs?|equit\w*|bonds?|yields?|rates?|inflation|econom\w*|gdp|banks?|banking|"
+                     r"loans?|credit|debt|dollar|rupee|currency|forex|oil|crude|brent|diesel|gas|commodit\w*|gold|trade|tariffs?|sanctions?|ipo|"
+                     r"earnings|revenue|profits?|dividends?|buyback|merger|acquisition|wall street|nasdaq|nyse|s&p|dow|sensex|nifty|fed|rbi|"
+                     r"central bank|price|prices|billion|million|buffett|rating|analyst|bullish|bearish|upgrade|downgrade|selloff|sell-off|"
+                     r"plunge\w*|soar\w*|rally|demand|steel|growth|exports?|imports?)\b", re.I)
+
 _STOP = {"the", "a", "an", "of", "to", "in", "on", "for", "and", "as", "at", "by", "is", "are", "its", "it",
          "with", "from", "after", "says", "said", "amid", "over", "new", "stock", "shares", "inc", "corp"}
 
@@ -61,8 +72,10 @@ def build_signals(raw):
 
     # a Google News search for "amazon stock" also returns deals and TV guides: it names no company and has no event
     noise = df.ticker_hint.isin(C.WATCHLIST) & (df.entity == C.MARKET_ENTITY) & (df.event == C.OTHER_EVENT)
-    dropped = int(noise.sum())
-    df = df[~noise]
+    filler = df.text.str.contains(FILLER) & ~noise
+    off_topic = (df.entity == C.MARKET_ENTITY) & (df.event == C.OTHER_EVENT) & ~df.text.str.contains(FINANCE) & ~noise & ~filler
+    detail = {"search": int(noise.sum()), "filler": int(filler.sum()), "off_topic": int(off_topic.sum())}
+    df = df[~(noise | filler | off_topic)]
 
     df, merged = merge_duplicates(df)                    # before sentiment: the slow step sees fewer texts
 
@@ -71,7 +84,7 @@ def build_signals(raw):
     df["impact"] = events.impact_df(df)
 
     out = df.rename(columns={"id": "signal_id"})[C.SIGNAL_COLUMNS]
-    return out.sort_values("ts").reset_index(drop=True), {"merged": merged, "dropped": dropped}
+    return out.sort_values("ts").reset_index(drop=True), {"merged": merged, "dropped": sum(detail.values()), "detail": detail}
 
 
 # ------------------------------------------------------------------ save / load
@@ -110,14 +123,14 @@ def run(mode=None, days=None):
 
     out, stats = build_signals(raw)
     meta = dict(generated_at=datetime.now(timezone.utc).isoformat(timespec="seconds"), mode=mode,
-                window_days=days, signals=len(out), duplicates_merged=stats["merged"], irrelevant_dropped=stats["dropped"],
+                window_days=days, signals=len(out), duplicates_merged=stats["merged"], irrelevant_dropped=stats["dropped"], dropped_detail=stats["detail"],
                 ts_min=out.ts.min().isoformat(), ts_max=out.ts.max().isoformat(),
                 sentiment_model=sentiment.get_backend().name,
                 high_impact=int((out.impact >= C.STRESS_TRIGGER_IMPACT).sum()),
                 by_source=out.source.value_counts().to_dict(), by_event=out.event.value_counts().to_dict())
     save_signals(out, meta)
 
-    print(f"\n{len(out)} signals ({stats['merged']} repeated stories merged, {stats['dropped']} irrelevant search results dropped) from {out.ts.min():%b %d} to {out.ts.max():%b %d}"
+    print(f"\n{len(out)} signals ({stats['merged']} repeated stories merged, {stats['dropped']} irrelevant items dropped: {stats['detail']['search']} search noise, {stats['detail']['filler']} filler/deals, {stats['detail']['off_topic']} off-topic) from {out.ts.min():%b %d} to {out.ts.max():%b %d}"
           f" in {time.time() - t0:.0f}s, sentiment model: {meta['sentiment_model']}")
     print("By source:   ", meta["by_source"])
     print("By event:    ", meta["by_event"])
