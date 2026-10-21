@@ -4,7 +4,7 @@
 **College Email ID:** r.yashvi@iitg.ac.in   
 **College / Campus:** IIT Guwahati   
 **Demo Video Link:** https://drive.google.com/drive/folders/1JnrT2iyWmfrG6JQXMQbod_wcL3S_lU34?usp=sharing   
-**Slide Deck Link:** https://drive.google.com/drive/folders/1QLR8JI0JXpJWN_woMbPYULCRuSO3lpf9?usp=share_link     
+**Slide Deck Link:** https://canva.link/zwhjgrlyu5verqa    
 
 ---
 
