@@ -3,7 +3,7 @@
 **Candidate Name:** Yashvi Raghuvanshi  
 **College Email ID:** r.yashvi@iitg.ac.in   
 **College / Campus:** IIT Guwahati   
-**Demo Video Link:** https://drive.google.com/drive/folders/1JnrT2iyWmfrG6JQXMQbod_wcL3S_lU34?usp=sharing   
+**Demo Video Link:** https://youtu.be/RYycolyyga0   
 **Slide Deck Link:** https://canva.link/zwhjgrlyu5verqa    
 
 ---
